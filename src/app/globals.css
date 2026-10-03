@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #08080a;
+  --foreground: #e8e8ec;
+  --surface: #111114;
+  --surface-hover: #1a1a1f;
+  --border: #222228;
+  --muted: #71717a;
+  --accent: #c8a44e;
+  --accent-hover: #d4b565;
+  --accent-glow: rgba(200, 164, 78, 0.15);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-glow: var(--accent-glow);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Content row scrollbar - hide by default, show on hover */
+.content-row-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.content-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* High-prominence CTA glowing effects */
+.cta-primary-glow {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 32px -4px rgba(200, 164, 78, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-primary-glow:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 12px 40px -2px rgba(200, 164, 78, 0.55);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.cta-white-glow {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 8px 30px -4px rgba(255, 255, 255, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-white-glow:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 12px 38px -2px rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Cinematic heading typography shadow */
+.text-cinema-shadow {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Button base reset */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
