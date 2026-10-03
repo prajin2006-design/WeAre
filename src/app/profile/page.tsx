@@ -435,6 +435,9 @@ export default function ProfilePage() {
                       const watchUrl = item.episode_id
                         ? `/watch/${item.content_id}?ep=${item.episode_id}`
                         : `/watch/${item.content_id}`;
+                      const detailsUrl = item.episode_id
+                        ? `/series/${item.content_id}`
+                        : `/movie/${item.content_id}`;
                       const remSecs = Math.max(0, (item.duration || 7200) - item.current_position);
                       const remMins = Math.ceil(remSecs / 60);
                       const timeStr =
@@ -448,7 +451,7 @@ export default function ProfilePage() {
                           className="rounded-xl border border-border/60 bg-background/60 overflow-hidden group hover:border-accent/60 transition-all shadow-md flex flex-col justify-between"
                         >
                           <div>
-                            <div className="relative aspect-video w-full bg-black/40 overflow-hidden">
+                            <Link href={detailsUrl} className="block relative aspect-video w-full bg-black/40 overflow-hidden">
                               <SafeImage
                                 src={item.backdrop_url || item.poster_url}
                                 alt={item.title}
@@ -461,11 +464,13 @@ export default function ProfilePage() {
                                   style={{ width: `${item.percentage}%` }}
                                 />
                               </div>
-                            </div>
+                            </Link>
                             <div className="p-3.5 space-y-1">
-                              <h4 className="text-sm font-bold text-white truncate group-hover:text-accent transition-colors">
-                                {item.title}
-                              </h4>
+                              <Link href={detailsUrl}>
+                                <h4 className="text-sm font-bold text-white truncate group-hover:text-accent transition-colors">
+                                  {item.title}
+                                </h4>
+                              </Link>
                               {item.episode_title ? (
                                 <p className="text-[11px] font-mono text-muted truncate">
                                   S{item.season_number}:E{item.episode_number} · {item.episode_title}
@@ -572,6 +577,9 @@ export default function ProfilePage() {
                       const watchUrl = item.episode_id
                         ? `/watch/${item.content_id}?ep=${item.episode_id}`
                         : `/watch/${item.content_id}`;
+                      const detailsUrl = item.episode_id
+                        ? `/series/${item.content_id}`
+                        : `/movie/${item.content_id}`;
                       const formattedDate = item.watched_at
                         ? new Date(item.watched_at).toLocaleDateString("en-US", {
                             month: "short",
@@ -586,18 +594,20 @@ export default function ProfilePage() {
                           className="flex items-center justify-between p-3 sm:p-4 rounded-xl border border-border/60 bg-background/50 hover:bg-surface/80 transition-colors"
                         >
                           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                            <div className="relative w-14 h-9 sm:w-16 sm:h-10 rounded-md overflow-hidden bg-black/40 flex-shrink-0">
+                            <Link href={detailsUrl} className="relative w-14 h-9 sm:w-16 sm:h-10 rounded-md overflow-hidden bg-black/40 flex-shrink-0 group/thumb">
                               <SafeImage
                                 src={item.backdrop_url || item.poster_url}
                                 alt={item.title}
                                 fill
-                                className="object-cover"
+                                className="object-cover group-hover/thumb:scale-105 transition-transform duration-300"
                               />
-                            </div>
+                            </Link>
                             <div className="min-w-0">
-                              <h4 className="text-xs sm:text-sm font-bold text-white truncate">
-                                {item.title}
-                              </h4>
+                              <Link href={detailsUrl}>
+                                <h4 className="text-xs sm:text-sm font-bold text-white truncate hover:text-accent transition-colors">
+                                  {item.title}
+                                </h4>
+                              </Link>
                               <p className="text-[11px] text-muted font-mono truncate">
                                 {item.episode_title
                                   ? `S${item.season_number}:E${item.episode_number} · ${item.episode_title}`

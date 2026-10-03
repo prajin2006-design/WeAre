@@ -592,7 +592,11 @@ export default function WatchPlayerClient({
         {/* Navigation Breadcrumb Bar */}
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 py-3 flex items-center justify-between text-xs sm:text-sm text-muted border-b border-border/30">
           <Link
-            href={isMovie(content) ? `/movie/${content.id}` : `/series/${content.id}`}
+            href={
+              isMovie(content)
+                ? `/movie/${content.id}`
+                : `/series/${content.id}?season=${selectedSeasonNumber}`
+            }
             className="inline-flex items-center gap-2 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

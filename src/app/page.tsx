@@ -9,13 +9,12 @@ import MyListRow from "@/components/movies/MyListRow";
 import Footer from "@/components/layout/Footer";
 import EmptyState from "@/components/ui/EmptyState";
 import { ContentService } from "@/lib/content/content-service";
-import { isMovie } from "@/types/content";
 
 export const revalidate = 0; // Dynamic server rendering
 
 export default async function HomePage() {
   const [
-    heroContent,
+    heroItems,
     trending,
     originals,
     popularMovies,
@@ -25,7 +24,7 @@ export default async function HomePage() {
     scifiMovies,
     actionMovies,
   ] = await Promise.all([
-    ContentService.getFeaturedHero(),
+    ContentService.getHeroCarouselItems(6),
     ContentService.getTrending(),
     ContentService.getWeAreOriginals(),
     ContentService.getPopularMovies(),
@@ -36,7 +35,7 @@ export default async function HomePage() {
     ContentService.getByGenre("action"),
   ]);
 
-  const hasAnyContent = Boolean(heroContent || trending.length > 0);
+  const hasAnyContent = Boolean((heroItems && heroItems.length > 0) || trending.length > 0);
 
   return (
     <div className="flex min-h-screen flex-col bg-background selection:bg-accent selection:text-black">
@@ -54,9 +53,9 @@ export default async function HomePage() {
           </div>
         ) : (
           <>
-            {/* 1. Monolithic Cinematic Hero */}
-            {heroContent && isMovie(heroContent) && (
-              <HeroBanner movie={heroContent} />
+            {/* 1. Dynamic Rotating Hero Carousel */}
+            {heroItems && heroItems.length > 0 && (
+              <HeroBanner items={heroItems} />
             )}
 
             {/* 2. User Watch Progress (Clean 16:9 Widescreen) */}

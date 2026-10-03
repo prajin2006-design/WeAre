@@ -41,18 +41,90 @@ export const ContentService = {
     return isSupabaseConfigured();
   },
 
-  async getFeaturedHero(): Promise<ContentItem | null> {
+  async getHeroCarouselItems(limit: number = 6): Promise<ContentItem[]> {
     try {
-      const res = await DynamicCatalogService.getMovies({ category: "trending", page: 1 });
-      if (res.items.length > 0) {
-        const candidate = res.items.find((m) => m.backdrop_url && m.rating >= 6.5) || res.items[0];
-        return {
-          ...candidate,
-          is_featured: true,
-        };
+      const [nowPlayingMovies, trendingMovies, trendingSeries] = await Promise.allSettled([
+        DynamicCatalogService.getMovies({ category: "now-playing", page: 1 }),
+        DynamicCatalogService.getMovies({ category: "trending", page: 1 }),
+        DynamicCatalogService.getSeries({ category: "trending", page: 1 }),
+      ]);
+
+      const moviesList: Movie[] = [];
+      if (nowPlayingMovies.status === "fulfilled" && nowPlayingMovies.value.items) {
+        moviesList.push(...nowPlayingMovies.value.items);
+      }
+      if (trendingMovies.status === "fulfilled" && trendingMovies.value.items) {
+        moviesList.push(...trendingMovies.value.items);
+      }
+
+      const seriesList: Series[] = [];
+      if (trendingSeries.status === "fulfilled" && trendingSeries.value.items) {
+        seriesList.push(...trendingSeries.value.items);
+      }
+
+      // Filter for high quality items with backdrops, posters, descriptions, and good ratings
+      const filterItem = (item: ContentItem) => {
+        return (
+          Boolean(item.backdrop_url) &&
+          !item.backdrop_url.includes("seed/weare-fallback") &&
+          Boolean(item.poster_url) &&
+          Boolean(item.title) &&
+          Boolean(item.description && item.description.trim().length > 20)
+        );
+      };
+
+      const validMovies = moviesList.filter(filterItem);
+      const validSeries = seriesList.filter(filterItem);
+
+      // Interleave movies and series so neither dominates
+      const combined: ContentItem[] = [];
+      const seenIds = new Set<string>();
+
+      const maxLen = Math.max(validMovies.length, validSeries.length);
+      for (let i = 0; i < maxLen; i++) {
+        if (validMovies[i] && !seenIds.has(validMovies[i].id)) {
+          seenIds.add(validMovies[i].id);
+          combined.push(validMovies[i]);
+        }
+        if (validSeries[i] && !seenIds.has(validSeries[i].id)) {
+          seenIds.add(validSeries[i].id);
+          combined.push(validSeries[i]);
+        }
+        if (combined.length >= limit) break;
+      }
+
+      if (combined.length > 0) {
+        return combined.slice(0, limit);
       }
     } catch (err) {
-      console.warn('[ContentService.getFeaturedHero] Dynamic TMDB notice:', err);
+      console.warn("[ContentService.getHeroCarouselItems] Dynamic TMDB notice:", err);
+    }
+
+    // Fallback if TMDB fails or returns empty
+    try {
+      const [localMovies, localSeries] = await Promise.all([
+        MovieService.getPopular(4),
+        SeriesService.getPopular(3),
+      ]);
+      const fallback: ContentItem[] = [];
+      const maxLen = Math.max(localMovies.length, localSeries.length);
+      for (let i = 0; i < maxLen; i++) {
+        if (localMovies[i]) fallback.push(localMovies[i]);
+        if (localSeries[i]) fallback.push(localSeries[i]);
+      }
+      return fallback.slice(0, limit);
+    } catch {
+      return [];
+    }
+  },
+
+  async getFeaturedHero(): Promise<ContentItem | null> {
+    const heroes = await this.getHeroCarouselItems(1);
+    if (heroes.length > 0) {
+      return {
+        ...heroes[0],
+        is_featured: true,
+      };
     }
     const movies = await MovieService.getPopular(5);
     const featured = movies.find((m) => m.is_featured);

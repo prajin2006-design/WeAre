@@ -87,6 +87,9 @@ export default function ContinueWatchingRow() {
             const playUrl = item.episode_id
               ? `/watch/${item.content_id}?ep=${item.episode_id}`
               : `/watch/${item.content_id}`;
+            const detailsUrl = item.episode_id
+              ? `/series/${item.content_id}`
+              : `/movie/${item.content_id}`;
 
             const remSecs = Math.max(0, (item.duration || 7200) - item.current_position);
             const remMins = Math.ceil(remSecs / 60);
@@ -117,6 +120,13 @@ export default function ContinueWatchingRow() {
                     </div>
                   )}
 
+                  {/* Backdrop Click to Details */}
+                  <Link
+                    href={detailsUrl}
+                    className="absolute inset-0 z-0"
+                    aria-label={`View details for ${item.title}`}
+                  />
+
                   {/* Dismiss */}
                   <button
                     type="button"
@@ -132,14 +142,15 @@ export default function ContinueWatchingRow() {
                   </button>
 
                   {/* Play Overlay */}
-                  <Link
-                    href={playUrl}
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity"
-                  >
-                    <div className="h-11 w-11 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 active:scale-95">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity pointer-events-none">
+                    <Link
+                      href={playUrl}
+                      className="pointer-events-auto h-11 w-11 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 active:scale-95"
+                      title={`Resume ${item.title}`}
+                    >
                       <Play className="h-4 w-4 fill-black translate-x-0.5" />
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
 
                   {/* Razor-thin Progress Bar at bottom of card */}
                   <div className="absolute bottom-0 inset-x-0 h-1 bg-black/80">
@@ -153,7 +164,7 @@ export default function ContinueWatchingRow() {
                 {/* Info */}
                 <div className="pt-2 flex items-baseline justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <Link href={playUrl} className="block group/title">
+                    <Link href={detailsUrl} className="block group/title">
                       <h3 className="text-sm font-bold text-white truncate group-hover/title:text-accent transition-colors">
                         {item.title}
                       </h3>

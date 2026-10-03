@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, ChevronLeft, ChevronRight, Plus, Check } from "lucide-react";
-import { ContentItem } from "@/types/content";
+import { ContentItem, isMovie } from "@/types/content";
 import { useUserContent } from "@/lib/context/user-content-context";
 
 interface TopRankedMarqueeProps {
@@ -83,6 +83,7 @@ export default function TopRankedMarquee({
             const rank = (index + 1).toString().padStart(2, "0");
             const inList = isInList(item.id);
             const playUrl = `/watch/${item.id}`;
+            const detailsUrl = isMovie(item) ? `/movie/${item.id}` : `/series/${item.id}`;
 
             return (
               <div
@@ -107,12 +108,19 @@ export default function TopRankedMarquee({
                     unoptimized
                   />
 
+                  {/* Backdrop Click to Details */}
+                  <Link
+                    href={detailsUrl}
+                    className="absolute inset-0 z-0"
+                    aria-label={`View details for ${item.title}`}
+                  />
+
                   {/* Clean dark tint on hover */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
                   {/* Hover Interactive Layer */}
-                  <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                    <div className="flex items-center justify-between">
+                  <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 pointer-events-none">
+                    <div className="flex items-center justify-between pointer-events-auto">
                       <span className="text-[11px] font-mono tracking-widest text-accent font-semibold uppercase">
                         #{index + 1} ON WEARE
                       </span>
@@ -134,11 +142,13 @@ export default function TopRankedMarquee({
                       </button>
                     </div>
 
-                    <div className="flex items-end justify-between gap-3">
+                    <div className="flex items-end justify-between gap-3 pointer-events-auto">
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-bold text-white truncate">
-                          {item.title}
-                        </h3>
+                        <Link href={detailsUrl} className="block group/title">
+                          <h3 className="text-base font-bold text-white truncate group-hover/title:text-accent transition-colors">
+                            {item.title}
+                          </h3>
+                        </Link>
                         <p className="text-xs text-white/70 font-mono mt-0.5 truncate">
                           {item.release_year} · {item.genres.slice(0, 2).join(" / ")}
                         </p>

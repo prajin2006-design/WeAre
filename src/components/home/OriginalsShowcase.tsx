@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Plus, Check, ArrowUpRight } from "lucide-react";
-import { ContentItem } from "@/types/content";
+import { ContentItem, isMovie } from "@/types/content";
 import { useUserContent } from "@/lib/context/user-content-context";
 
 interface OriginalsShowcaseProps {
@@ -19,6 +19,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
   const sideItems = items.slice(1, 4);
 
   const inListLead = isInList(leadItem.id);
+  const leadDetailsUrl = isMovie(leadItem) ? `/movie/${leadItem.id}` : `/series/${leadItem.id}`;
 
   return (
     <section className="relative my-16 sm:my-20">
@@ -59,7 +60,12 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                 className="object-cover transition-transform duration-700 group-hover:scale-103"
                 unoptimized
               />
-              <div className="absolute top-4 left-4 z-10">
+              <Link
+                href={leadDetailsUrl}
+                className="absolute inset-0 z-0"
+                aria-label={`View details for ${leadItem.title}`}
+              />
+              <div className="absolute top-4 left-4 z-10 pointer-events-none">
                 <span className="bg-black/80 border border-white/20 px-2.5 py-1 text-[10px] font-mono tracking-widest text-accent uppercase rounded">
                   SIGNATURE WORK
                 </span>
@@ -81,9 +87,11 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                   )}
                 </div>
 
-                <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight mb-3">
-                  {leadItem.title}
-                </h3>
+                <Link href={leadDetailsUrl} className="group/title block">
+                  <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight mb-3 group-hover/title:text-accent transition-colors">
+                    {leadItem.title}
+                  </h3>
+                </Link>
 
                 <p className="text-sm text-foreground/80 leading-relaxed max-w-xl line-clamp-3 mb-6">
                   {leadItem.description}
@@ -114,7 +122,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                 </button>
 
                 <Link
-                  href={`/movie/${leadItem.id}`}
+                  href={leadDetailsUrl}
                   className="ml-auto text-xs font-mono text-muted hover:text-white transition-colors"
                 >
                   CREDITS & DETAILS →
@@ -127,6 +135,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
           <div className="lg:col-span-5 flex flex-col gap-4">
             {sideItems.map((item, idx) => {
               const inList = isInList(item.id);
+              const detailsUrl = isMovie(item) ? `/movie/${item.id}` : `/series/${item.id}`;
 
               return (
                 <div
@@ -144,8 +153,9 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                       unoptimized
                     />
                     <Link
-                      href={`/watch/${item.id}`}
+                      href={detailsUrl}
                       className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label={`View details for ${item.title}`}
                     >
                       <div className="h-8 w-8 rounded-full bg-white text-black flex items-center justify-center">
                         <Play className="h-3.5 w-3.5 fill-black translate-x-0.5" />
@@ -161,7 +171,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                       <span>{item.release_year}</span>
                     </div>
 
-                    <Link href={`/watch/${item.id}`}>
+                    <Link href={detailsUrl}>
                       <h4 className="text-base font-bold text-white truncate mt-1 group-hover:text-accent transition-colors">
                         {item.title}
                       </h4>

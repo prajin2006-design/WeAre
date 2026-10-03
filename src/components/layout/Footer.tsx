@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Copyright & Disclaimer */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-border/30 pt-8 text-xs text-muted">
           <div>
-            <p>© {new Date().getFullYear()} WeAre Entertainment Inc. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} WeAre Entertainment Inc. All rights reserved. By Prajin</p>
             <p className="text-[11px] text-muted/70 mt-1">
               Film metadata and posters provided by The Movie Database (TMDB). This product uses the TMDB API but is not endorsed or certified by TMDB.
             </p>

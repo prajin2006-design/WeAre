@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Plus, Check, Star, Calendar, Clock, Film } from "lucide-react";
@@ -8,13 +8,13 @@ import { Series, Season } from "@/types/content";
 import { useUserContent } from "@/lib/context/user-content-context";
 import Badge from "@/components/ui/Badge";
 
-export default function SeriesView({ series }: { series: Series }) {
+export default function SeriesView({ series, initialSeason }: { series: Series; initialSeason?: number }) {
   const { isInList, toggleMyList } = useUserContent();
   const inList = isInList(series.id);
 
   const [seasons, setSeasons] = useState<Season[]>(series.seasons || []);
   const [activeSeasonNumber, setActiveSeasonNumber] = useState(
-    series.seasons && series.seasons.length > 0 ? series.seasons[0].season_number : 1
+    initialSeason || (series.seasons && series.seasons.length > 0 ? series.seasons[0].season_number : 1)
   );
   const [loadingSeason, setLoadingSeason] = useState(false);
 
@@ -48,6 +48,36 @@ export default function SeriesView({ series }: { series: Series }) {
       }
     }
   };
+
+  useEffect(() => {
+    if (!initialSeason) return;
+    const targetSeason = seasons.find((s) => s.season_number === initialSeason);
+    if (targetSeason && targetSeason.episodes && targetSeason.episodes.length > 0) return;
+
+    let isMounted = true;
+    fetch(`/api/catalog/season?seriesId=${series.tmdb_id || series.id}&season=${initialSeason}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.season) {
+          setSeasons((prev) => {
+            const existingIdx = prev.findIndex((s) => s.season_number === initialSeason);
+            if (existingIdx >= 0) {
+              const updated = [...prev];
+              updated[existingIdx] = data.season;
+              return updated;
+            }
+            return [...prev, data.season].sort((a, b) => a.season_number - b.season_number);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load initial season episodes:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialSeason, seasons, series.id, series.tmdb_id]);
 
   const currentSeason = seasons.find((s) => s.season_number === activeSeasonNumber) || seasons[0];
 
