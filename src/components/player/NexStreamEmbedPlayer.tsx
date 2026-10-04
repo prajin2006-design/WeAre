@@ -52,21 +52,23 @@ export default function NexStreamEmbedPlayer({
   onTryVidFast,
 }: NexStreamEmbedPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [prevSrc, setPrevSrc] = useState<string>(src);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showControls, setShowControls] = useState<boolean>(true);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Reset loading and error state strictly when provider src URL changes
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setIsLoading(true);
+    setHasError(false);
+  }
+
   const fallbackServerName =
     alternativeName || (serverName.toLowerCase().includes("vidfast") ? "NexStream Fast" : "VidFast");
   const fallbackHandler = onTryAlternative || onTryVidFast;
-
-  // Reset loading and error state strictly when provider src URL changes
-  useEffect(() => {
-    setIsLoading(true);
-    setHasError(false);
-  }, [src]);
 
   const handleIframeLoad = useCallback(() => {
     setIsLoading(false);
@@ -100,7 +102,7 @@ export default function NexStreamEmbedPlayer({
   }, []);
 
   // Auto-hide controls overlay
-  const handleMouseMove = () => {
+  const handleMouseMove = useCallback(() => {
     setShowControls(true);
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
@@ -108,7 +110,7 @@ export default function NexStreamEmbedPlayer({
     controlsTimeoutRef.current = setTimeout(() => {
       setShowControls(false);
     }, 3000);
-  };
+  }, []);
 
   useEffect(() => {
     return () => {

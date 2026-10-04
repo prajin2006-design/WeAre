@@ -46,7 +46,6 @@ interface WatchPlayerClientProps {
 
 export default function WatchPlayerClient({
   content,
-  sources = [],
   title,
   subtitle,
   episode,
@@ -128,51 +127,43 @@ export default function WatchPlayerClient({
     }
   }, [episode, initialSeasonEpisodes]);
 
-  // Video sources state (regenerates dynamically on episode switch)
-  const [currentSources, setCurrentSources] = useState<VideoSource[]>(sources);
+  // 1. Separate State: Selected Server (default: "vidfast" as primary server)
+  const [selectedServer, setSelectedServer] = useState<"vidfast" | "nexstream">("vidfast");
 
-  // Sort sources strictly: 1. VidFast (DEFAULT), 2. NexStream Fast, then any others
-  const orderedSources = useMemo(() => {
-    if (!currentSources || currentSources.length === 0) return [];
-    return [...currentSources].sort((a, b) => {
-      const aIsVid = a.name.toLowerCase().includes("vidfast") || a.id.includes("vidfast");
-      const bIsVid = b.name.toLowerCase().includes("vidfast") || b.id.includes("vidfast");
-      if (aIsVid && !bIsVid) return -1;
-      if (!aIsVid && bIsVid) return 1;
-
-      const aIsNex = a.name.toLowerCase().includes("nexstream") || a.id.includes("nexstream");
-      const bIsNex = b.name.toLowerCase().includes("nexstream") || b.id.includes("nexstream");
-      if (aIsNex && !bIsNex) return -1;
-      if (!aIsNex && bIsNex) return 1;
-
-      return (a.priority || 0) - (b.priority || 0);
-    });
-  }, [currentSources]);
-
-  // Always default to VidFast
-  const vidFastSource = orderedSources.find(
-    (s) => s.name.toLowerCase().includes("vidfast") || s.id.includes("vidfast")
-  );
-  const defaultSource = vidFastSource || (orderedSources.length > 0 ? orderedSources[0] : null);
-
-  const [activeSource, setActiveSource] = useState<VideoSource | null>(defaultSource);
   // Use a ref for playback position tracking so interval updates do NOT re-render the Watch page or iframe
   const playbackPosRef = useRef<number>(0);
 
-  // Track media identity to reset back to VidFast default when opening a NEW title
-  // while preserving user selection (e.g. manual NexStream switch) during the current session
-  const mediaKey = `${content.id}:${currentEpisode?.id || "movie"}`;
-  const [prevMediaKey, setPrevMediaKey] = useState(mediaKey);
+  // 2. Stable, memoized provider URL based strictly on (selectedServer, content, episode)
+  const activeProvider = useMemo(() => {
+    if (!effectiveTmdbId || effectiveTmdbId <= 0) {
+      return null;
+    }
 
-  if (prevMediaKey !== mediaKey) {
-    setPrevMediaKey(mediaKey);
-  } else if (!activeSource && defaultSource) {
-    setActiveSource(defaultSource);
-  } else if (activeSource && !orderedSources.some((s) => s.id === activeSource.id)) {
-    setActiveSource(defaultSource);
-  }
+    if (selectedServer === "nexstream") {
+      const url = isTV && currentEpisode
+        ? `/api/stream/nexstream?type=tv&id=${effectiveTmdbId}&s=${currentEpisode.season_number}&e=${currentEpisode.episode_number}`
+        : `/api/stream/nexstream?type=movie&id=${effectiveTmdbId}`;
+      return {
+        id: "nexstream" as const,
+        name: "NexStream Fast",
+        qualityBadge: "EMBED • 1080p",
+        url,
+      };
+    }
 
-  const hasPlayableSource = orderedSources.length > 0;
+    // Default: VidFast (Server 1)
+    const url = isTV && currentEpisode
+      ? `https://vidfast.vc/tv/${effectiveTmdbId}/${currentEpisode.season_number}/${currentEpisode.episode_number}?autoPlay=true`
+      : `https://vidfast.vc/movie/${effectiveTmdbId}?autoPlay=true`;
+    return {
+      id: "vidfast" as const,
+      name: "VidFast",
+      qualityBadge: "EMBED • Auto",
+      url,
+    };
+  }, [selectedServer, effectiveTmdbId, isTV, currentEpisode]);
+
+  const hasPlayableSource = Boolean(activeProvider?.url);
 
   // Saved watch progress for Resume Playback feature (episode-specific)
   const saved = getProgress(content.id, currentEpisode?.id);
@@ -190,17 +181,16 @@ export default function WatchPlayerClient({
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
-  // Safe source switching preserving playback position
-  const handleSelectSource = (newSource: VideoSource) => {
-    if (activeSource && newSource.id === activeSource.id) return;
-    setActiveSource(newSource);
-    showToast(`Switched to server: ${newSource.name}`, "info");
+  // Safe server switching: unmounts old provider and mounts single new provider only when server actually changes
+  const handleSelectServer = (newServer: "vidfast" | "nexstream") => {
+    if (selectedServer === newServer) return;
+    setSelectedServer(newServer);
+    showToast(`Switched to server: ${newServer === "vidfast" ? "VidFast" : "NexStream Fast"}`, "info");
   };
 
-  const alternativeSource = orderedSources.find((s) => s.id !== activeSource?.id);
-  const handleTryAlternative = alternativeSource
-    ? () => handleSelectSource(alternativeSource)
-    : undefined;
+  const handleToggleAlternative = () => {
+    handleSelectServer(selectedServer === "vidfast" ? "nexstream" : "vidfast");
+  };
 
   // Watch progress estimation via time-on-page tracking
   // Cross-origin embeds (VidFast, NexStream) cannot expose playback events, so we
@@ -217,51 +207,6 @@ export default function WatchPlayerClient({
     setSelectedSeasonNumber(newEp.season_number);
     setCurrentSubtitle(`Season ${newEp.season_number} • Episode ${newEp.episode_number}: ${newEp.title}`);
     setEpisodesError(null);
-
-    // Generate new sources for new episode
-    const newSources: VideoSource[] = [];
-    if (effectiveTmdbId && effectiveTmdbId > 0) {
-      // 1. VidFast (DEFAULT)
-      newSources.push({
-        id: `src-vidfast-${content.id}-s${newEp.season_number}-e${newEp.episode_number}`,
-        content_id: newEp.id,
-        content_type: "episode",
-        name: "VidFast",
-        source_type: "embed",
-        url: `https://vidfast.vc/tv/${effectiveTmdbId}/${newEp.season_number}/${newEp.episode_number}?autoPlay=true`,
-        quality: "Auto",
-        language: "en",
-        is_active: true,
-        priority: 1,
-        is_healthy: true,
-      });
-
-      // 2. NexStream Fast
-      newSources.push({
-        id: `src-nexstream-${content.id}-s${newEp.season_number}-e${newEp.episode_number}`,
-        content_id: newEp.id,
-        content_type: "episode",
-        name: "NexStream Fast",
-        source_type: "embed",
-        url: `/api/stream/nexstream?type=tv&id=${effectiveTmdbId}&s=${newEp.season_number}&e=${newEp.episode_number}`,
-        quality: "1080p",
-        language: "en",
-        is_active: true,
-        priority: 2,
-        is_healthy: true,
-      });
-    }
-
-    setCurrentSources(newSources);
-
-    // Maintain current selected provider if user explicitly chose NexStream
-    setActiveSource((prevActive) => {
-      const isNex = prevActive?.name.toLowerCase().includes("nexstream");
-      if (isNex) {
-        return newSources.find((s) => s.name.toLowerCase().includes("nexstream")) || newSources[0] || null;
-      }
-      return newSources.find((s) => s.name.toLowerCase().includes("vidfast")) || newSources[0] || null;
-    });
 
     // Update browser URL so page refresh preserves selected season and episode
     const newUrl = `/watch/${content.id}?season=${newEp.season_number}&episode=${newEp.episode_number}`;
@@ -281,7 +226,7 @@ export default function WatchPlayerClient({
 
     recordWatchHistory(content, newEp);
     showToast(`Switched to Season ${newEp.season_number} Episode ${newEp.episode_number}`, "info");
-  }, [content, effectiveTmdbId, getProgress, recordWatchHistory, showToast]);
+  }, [content, getProgress, recordWatchHistory, showToast]);
 
   // Season change handler (fetches episodes from TMDB if not cached)
   const handleSeasonChange = async (newSeasonNum: number) => {
@@ -645,18 +590,18 @@ export default function WatchPlayerClient({
         )}
 
         {/* Video Player or Playback Unavailable Section */}
-        {hasPlayableSource && activeSource ? (
+        {hasPlayableSource && activeProvider ? (
           <>
             <section className="w-full bg-black relative shadow-2xl">
               <div className="max-w-[1800px] mx-auto aspect-video max-h-[85vh] w-full">
                 <NexStreamEmbedPlayer
-                  key={`${activeSource.id}-${currentEpisode?.id || "movie"}`}
-                  src={activeSource.url}
+                  key={`${selectedServer}-${content.id}-${isTV && currentEpisode ? `s${currentEpisode.season_number}-e${currentEpisode.episode_number}` : "movie"}`}
+                  src={activeProvider.url}
                   title={title}
-                  serverName={activeSource.name}
-                  qualityBadge={activeSource.name.toLowerCase().includes("nexstream") ? "EMBED • 1080p" : "EMBED • Auto"}
-                  onTryAlternative={handleTryAlternative}
-                  alternativeName={alternativeSource?.name}
+                  serverName={activeProvider.name}
+                  qualityBadge={activeProvider.qualityBadge}
+                  onTryAlternative={handleToggleAlternative}
+                  alternativeName={selectedServer === "vidfast" ? "NexStream Fast" : "VidFast"}
                 />
               </div>
             </section>
@@ -670,14 +615,15 @@ export default function WatchPlayerClient({
                     Streaming Servers
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
-                    {orderedSources.map((s) => {
-                      const isActive = activeSource ? s.id === activeSource.id : false;
-                      const isNex = s.name.toLowerCase().includes("nexstream");
-                      const badgeText = isNex ? "EMBED • 1080p" : "EMBED • Auto";
+                    {[
+                      { id: "vidfast" as const, name: "VidFast", badge: "EMBED • Auto" },
+                      { id: "nexstream" as const, name: "NexStream Fast", badge: "EMBED • 1080p" },
+                    ].map((s) => {
+                      const isActive = selectedServer === s.id;
                       return (
                         <button
                           key={s.id}
-                          onClick={() => handleSelectSource(s)}
+                          onClick={() => handleSelectServer(s.id)}
                           className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95 ${
                             isActive
                               ? "bg-accent text-black shadow-md shadow-accent/20"
@@ -693,7 +639,7 @@ export default function WatchPlayerClient({
                                 : "bg-surface/80 text-muted"
                             }`}
                           >
-                            {badgeText}
+                            {s.badge}
                           </span>
                         </button>
                       );
@@ -994,7 +940,7 @@ export default function WatchPlayerClient({
                 <input
                   type="text"
                   disabled
-                  value={activeSource ? activeSource.name : "None (Unavailable)"}
+                  value={activeProvider ? activeProvider.name : "None (Unavailable)"}
                   className="w-full rounded-xl border border-border bg-background py-2 px-3 text-xs text-white/60 cursor-not-allowed"
                 />
               </div>
