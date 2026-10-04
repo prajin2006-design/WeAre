@@ -164,9 +164,8 @@ export const MovieService = {
     return local || null;
   },
 
-  async getRecommended(movieId: string, limit: number = 8): Promise<Movie[]> {
-    const all = await this.getPopular(20);
-    return all.filter((m) => m.id !== movieId).slice(0, limit);
+  async getRecommended(): Promise<Movie[]> {
+    return [];
   },
 
   async addMovie(movie: Omit<Movie, 'id' | 'created_at'>): Promise<Movie> {

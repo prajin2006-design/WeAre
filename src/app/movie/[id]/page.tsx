@@ -10,7 +10,6 @@ import { ContentService } from "@/lib/content/content-service";
 import { resolveContentById } from "@/lib/catalog/content-resolver";
 import { VideoSourceService } from "@/lib/video/video-source-service";
 
-import { getMovieRecommendations } from "@/lib/tmdb/movies";
 import { getTMDBPosterUrl, getTMDBBackdropUrl } from "@/lib/tmdb/images";
 import { ContentItem } from "@/types/content";
 
@@ -28,48 +27,58 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
 
   const primaryGenre = content.genres[0] || "Action";
 
-  const [hasPlayableSource, generalRecommended] = await Promise.all([
-    VideoSourceService.hasPlayableSource(content.id, "movie", content.tmdb_id),
-    ContentService.getRecommended(content.id),
+  const effectiveTmdbId =
+    content.tmdb_id ||
+    (() => {
+      const clean = String(content.id).replace(/^(m-|movie-|tmdb-)/i, "");
+      const num = parseInt(clean, 10);
+      return !isNaN(num) && num > 0 ? num : undefined;
+    })();
+
+  const [hasPlayableSource, recommended] = await Promise.all([
+    VideoSourceService.hasPlayableSource(content.id, "movie", effectiveTmdbId),
+    ContentService.getRecommended(content.id, "movie", 10),
   ]);
 
   let similarMovies: ContentItem[] = [];
-  if (content.tmdb_id) {
+  if (effectiveTmdbId) {
     try {
-      const tmdbRecs = await getMovieRecommendations(content.tmdb_id);
-      if (tmdbRecs && tmdbRecs.length > 0) {
-        similarMovies = tmdbRecs.slice(0, 8).map((m) => ({
-          id: String(m.id),
-          tmdb_id: m.id,
-          title: m.title,
-          description: m.overview || '',
-          release_year: m.release_date ? new Date(m.release_date).getFullYear() : 2025,
-          duration: '2h 00m',
-          duration_seconds: 7200,
-          age_rating: m.adult ? 'R' : 'PG-13',
-          rating: Number(m.vote_average.toFixed(1)),
-          genres: [primaryGenre],
-          poster_url: getTMDBPosterUrl(m.poster_path, 'w500', `rec-${m.id}`),
-          backdrop_url: getTMDBBackdropUrl(m.backdrop_path, 'w1280', `rec-bg-${m.id}`),
-          video_url: '',
-          language: m.original_language || 'English',
-          cast: ['TMDB Ensemble'],
-          director: 'Featured Director',
-          is_featured: false,
-          is_published: true,
-          is_original: false,
-          created_at: new Date().toISOString(),
-        }));
+      const { getSimilarMovies } = await import("@/lib/tmdb/movies");
+      const tmdbSimilar = await getSimilarMovies(effectiveTmdbId);
+      if (tmdbSimilar && tmdbSimilar.length > 0) {
+        const recIds = new Set(recommended.map((r) => String(r.id)));
+        recIds.add(String(content.id));
+        recIds.add(String(effectiveTmdbId));
+
+        similarMovies = tmdbSimilar
+          .filter((m) => m && m.id && m.poster_path && !recIds.has(String(m.id)))
+          .slice(0, 8)
+          .map((m) => ({
+            id: String(m.id),
+            tmdb_id: m.id,
+            title: m.title || "Untitled",
+            description: m.overview || "",
+            release_year: m.release_date ? new Date(m.release_date).getFullYear() : 2025,
+            duration: "2h 00m",
+            duration_seconds: 7200,
+            age_rating: m.adult ? "R" : "PG-13",
+            rating: Number((m.vote_average || 7.0).toFixed(1)),
+            genres: [primaryGenre],
+            poster_url: getTMDBPosterUrl(m.poster_path, "w500", `rec-${m.id}`),
+            backdrop_url: getTMDBBackdropUrl(m.backdrop_path, "w1280", `rec-bg-${m.id}`),
+            video_url: `/api/stream/nexstream?type=movie&id=${m.id}`,
+            language: m.original_language?.toUpperCase() || "EN",
+            cast: ["Featured Cast"],
+            director: "Featured Director",
+            is_featured: false,
+            is_published: true,
+            is_original: false,
+            created_at: m.release_date || new Date().toISOString(),
+          }));
       }
     } catch {
-      // Fallback below
+      // Fallback
     }
-  }
-
-  if (similarMovies.length === 0) {
-    similarMovies = await ContentService.getByGenre(primaryGenre).then((res) =>
-      res.filter((m) => m.id !== content.id).slice(0, 8)
-    );
   }
 
   return (
@@ -209,9 +218,20 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
             </div>
           </div>
 
+          {/* Recommended Content Row */}
+          {recommended.length > 0 && (
+            <div className="mt-16 border-t border-border/40 pt-10">
+              <ContentRow
+                title="Recommended Content"
+                subtitle={`Titles recommended for fans of ${content.title}`}
+                items={recommended}
+              />
+            </div>
+          )}
+
           {/* Similar Movies Row */}
           {similarMovies.length > 0 && (
-            <div className="mt-16 border-t border-border/40 pt-10">
+            <div className="mt-8 border-t border-border/30 pt-8">
               <ContentRow
                 title={`Similar Movies in ${primaryGenre}`}
                 subtitle="Titles featuring similar themes and cinematic tones"
@@ -219,15 +239,6 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
               />
             </div>
           )}
-
-          {/* Recommended Row */}
-          <div className="mt-8 border-t border-border/30 pt-8">
-            <ContentRow
-              title="Recommended For You"
-              subtitle="Audience favorites and critically acclaimed titles on WeAre"
-              items={generalRecommended}
-            />
-          </div>
         </div>
       </main>
 

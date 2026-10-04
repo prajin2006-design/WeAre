@@ -13,7 +13,12 @@ export default async function SeriesDetailsPage({ params, searchParams }: Series
   const { id } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const initialSeason = resolvedSearchParams?.season ? parseInt(resolvedSearchParams.season, 10) : undefined;
-  const content = await resolveContentById(id, "tv");
+  
+  const { ContentService } = await import("@/lib/content/content-service");
+  const [content, recommended] = await Promise.all([
+    resolveContentById(id, "tv"),
+    ContentService.getRecommended(id, "tv", 10),
+  ]);
 
   if (!content || !('seasons' in content)) {
     notFound();
@@ -23,7 +28,12 @@ export default async function SeriesDetailsPage({ params, searchParams }: Series
     <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
       <main className="flex-1 pb-16">
-        <SeriesView series={content} initialSeason={initialSeason && !isNaN(initialSeason) ? initialSeason : undefined} />
+        <SeriesView
+          key={content.id}
+          series={content}
+          initialSeason={initialSeason && !isNaN(initialSeason) ? initialSeason : undefined}
+          recommended={recommended}
+        />
       </main>
       <Footer />
     </div>

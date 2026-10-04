@@ -35,7 +35,7 @@ export default async function WatchPage({ params, searchParams }: WatchPageProps
 
   const [content, recommended] = await Promise.all([
     resolveContentById(id, preferredType),
-    ContentService.getRecommended(id),
+    ContentService.getRecommended(id, preferredType, 10),
   ]);
 
   if (!content) {

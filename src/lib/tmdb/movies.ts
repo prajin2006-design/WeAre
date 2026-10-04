@@ -43,6 +43,15 @@ export async function getMovieCredits(tmdbId: number): Promise<TMDBCredits | nul
 }
 
 export async function getMovieRecommendations(tmdbId: number): Promise<TMDBMovie[]> {
-  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBMovie>>(`/movie/${tmdbId}/recommendations`);
+  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBMovie>>(`/movie/${tmdbId}/recommendations`, {
+    revalidateSeconds: 86400,
+  });
+  return data?.results || [];
+}
+
+export async function getSimilarMovies(tmdbId: number): Promise<TMDBMovie[]> {
+  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBMovie>>(`/movie/${tmdbId}/similar`, {
+    revalidateSeconds: 86400,
+  });
   return data?.results || [];
 }

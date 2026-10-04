@@ -1,4 +1,4 @@
-import { ContentItem, Movie, Series, Episode } from '@/types/content';
+import { ContentItem, Movie, Series, Episode, isMovie } from '@/types/content';
 import { DynamicCatalogService } from '@/lib/tmdb/dynamic-catalog';
 import { MovieService } from './movie-service';
 import { SeriesService } from './series-service';
@@ -248,9 +248,71 @@ export const ContentService = {
     return await this.getTrending();
   },
 
-  async getRecommended(currentId: string): Promise<ContentItem[]> {
-    const popular = await this.getPopularMovies();
-    return popular.filter((item) => item.id !== currentId).slice(0, 8);
+  async getRecommended(
+    currentId: string,
+    preferredType?: "movie" | "tv",
+    limit: number = 10
+  ): Promise<ContentItem[]> {
+    if (!currentId) return [];
+
+    const isSeriesPrefix = /^(s-|tv-|series-)/i.test(currentId);
+    let isTv = preferredType === "tv" || isSeriesPrefix;
+
+    const cleanId = currentId.replace(/^(m-|movie-|s-|tv-|series-|tmdb-)/i, "");
+    let numericId: number | undefined = parseInt(cleanId, 10);
+    if (isNaN(numericId) || numericId <= 0) {
+      numericId = undefined;
+    }
+
+    let title: string | undefined;
+
+    // Resolve item metadata if numeric ID or type isn't fully determined
+    if (!numericId || !preferredType) {
+      try {
+        const item = await this.getContentById(currentId, preferredType);
+        if (item) {
+          if (item.tmdb_id) numericId = item.tmdb_id;
+          isTv = !isMovie(item) || "seasons" in item;
+          title = item.title;
+        }
+      } catch {
+        // Continue
+      }
+    }
+
+    // If item had no numeric ID (e.g. custom database entry with custom slug), try searching by title on TMDB
+    if (!numericId && title) {
+      try {
+        const searchRes = await DynamicCatalogService.search({
+          query: title,
+          type: isTv ? "tv" : "movie",
+        });
+        if (searchRes.items.length > 0 && searchRes.items[0].tmdb_id) {
+          numericId = searchRes.items[0].tmdb_id;
+        }
+      } catch {
+        // Continue
+      }
+    }
+
+    // Request dynamic title-specific recommendations from TMDB
+    if (numericId && !isNaN(numericId) && numericId > 0) {
+      try {
+        if (isTv) {
+          const seriesRecs = await DynamicCatalogService.getSeriesRecommendations(numericId, limit);
+          if (seriesRecs.length > 0) return seriesRecs;
+        } else {
+          const movieRecs = await DynamicCatalogService.getMovieRecommendations(numericId, limit);
+          if (movieRecs.length > 0) return movieRecs;
+        }
+      } catch (err) {
+        console.warn(`[ContentService.getRecommended] Error for ${currentId}:`, err);
+      }
+    }
+
+    // If TMDB returns no recommendations or fails, return empty array.
+    // Never fall back to a global static popular array.
+    return [];
   },
 
   async getContentById(id: string, preferredType?: "movie" | "tv"): Promise<ContentItem | null> {

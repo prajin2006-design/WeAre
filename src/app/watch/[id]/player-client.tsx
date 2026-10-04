@@ -971,7 +971,7 @@ export default function WatchPlayerClient({
           <section className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-12 pb-16">
             <ContentRow
               title="Recommended Content"
-              subtitle="More critically acclaimed titles available on WeAre"
+              subtitle={`More titles matched to ${title}`}
               items={recommended}
             />
           </section>

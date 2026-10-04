@@ -585,4 +585,100 @@ export const DynamicCatalogService = {
   async getGenres(type: "movie" | "tv"): Promise<TMDBGenre[]> {
     return type === "movie" ? await getMovieGenres() : await getSeriesGenres();
   },
+
+  /**
+   * Fetch title-specific movie recommendations from TMDB
+   */
+  async getMovieRecommendations(tmdbId: number, limit: number = 10): Promise<Movie[]> {
+    if (!tmdbId || isNaN(tmdbId) || tmdbId <= 0) return [];
+
+    const genreMap = await getMovieGenreMap();
+
+    // Query both recommendations and similar concurrently with 24-hr cache
+    const [recRes, similarRes] = await Promise.all([
+      tmdbFetch<TMDBPaginatedResponse<TMDBMovie>>(`/movie/${tmdbId}/recommendations`, {
+        revalidateSeconds: 86400,
+      }),
+      tmdbFetch<TMDBPaginatedResponse<TMDBMovie>>(`/movie/${tmdbId}/similar`, {
+        revalidateSeconds: 86400,
+      }),
+    ]);
+
+    const candidates = [
+      ...(recRes?.results || []),
+      ...(similarRes?.results || []),
+    ];
+
+    const seenIds = new Set<number>();
+    seenIds.add(tmdbId); // Exclude current title
+
+    const seenTitles = new Set<string>();
+
+    const validMovies: Movie[] = [];
+    for (const m of candidates) {
+      if (!m || !m.id || isNaN(m.id)) continue;
+      if (seenIds.has(m.id)) continue;
+      // Exclude items without usable poster
+      if (!m.poster_path || typeof m.poster_path !== "string" || m.poster_path.trim() === "") continue;
+
+      const normTitle = (m.title || m.original_title || "").trim().toLowerCase();
+      if (!normTitle || seenTitles.has(normTitle)) continue;
+
+      seenIds.add(m.id);
+      seenTitles.add(normTitle);
+
+      validMovies.push(mapTMDBMovieToMovie(m, genreMap));
+      if (validMovies.length >= limit) break;
+    }
+
+    return validMovies;
+  },
+
+  /**
+   * Fetch title-specific TV series recommendations from TMDB
+   */
+  async getSeriesRecommendations(tmdbId: number, limit: number = 10): Promise<Series[]> {
+    if (!tmdbId || isNaN(tmdbId) || tmdbId <= 0) return [];
+
+    const genreMap = await getTVGenreMap();
+
+    // Query both recommendations and similar concurrently with 24-hr cache
+    const [recRes, similarRes] = await Promise.all([
+      tmdbFetch<TMDBPaginatedResponse<TMDBSeries>>(`/tv/${tmdbId}/recommendations`, {
+        revalidateSeconds: 86400,
+      }),
+      tmdbFetch<TMDBPaginatedResponse<TMDBSeries>>(`/tv/${tmdbId}/similar`, {
+        revalidateSeconds: 86400,
+      }),
+    ]);
+
+    const candidates = [
+      ...(recRes?.results || []),
+      ...(similarRes?.results || []),
+    ];
+
+    const seenIds = new Set<number>();
+    seenIds.add(tmdbId); // Exclude current title
+
+    const seenTitles = new Set<string>();
+
+    const validSeries: Series[] = [];
+    for (const s of candidates) {
+      if (!s || !s.id || isNaN(s.id)) continue;
+      if (seenIds.has(s.id)) continue;
+      // Exclude items without usable poster
+      if (!s.poster_path || typeof s.poster_path !== "string" || s.poster_path.trim() === "") continue;
+
+      const normTitle = (s.name || s.original_name || "").trim().toLowerCase();
+      if (!normTitle || seenTitles.has(normTitle)) continue;
+
+      seenIds.add(s.id);
+      seenTitles.add(normTitle);
+
+      validSeries.push(mapTMDBSeriesToSeries(s, genreMap));
+      if (validSeries.length >= limit) break;
+    }
+
+    return validSeries;
+  },
 };

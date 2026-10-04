@@ -39,6 +39,13 @@ export function isTMDBConfigured(): boolean {
   return Boolean(token && token.trim().length > 15 && !token.includes("your-tmdb"));
 }
 
+interface CacheEntry<T> {
+  data: T;
+  expiresAt: number;
+}
+
+const tmdbMemoryCache = new Map<string, CacheEntry<unknown>>();
+
 export async function tmdbFetch<T>(
   endpoint: string,
   options?: {
@@ -63,6 +70,12 @@ export async function tmdbFetch<T>(
         url.searchParams.set(key, String(value));
       }
     });
+  }
+
+  const cacheKey = url.pathname + url.search;
+  const cached = tmdbMemoryCache.get(cacheKey);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.data as T;
   }
 
   try {
@@ -114,6 +127,18 @@ export async function tmdbFetch<T>(
 
       req.on("error", () => resolve(null));
     });
+
+    if (result !== null) {
+      const ttl = (options?.revalidateSeconds ?? 3600) * 1000;
+      if (tmdbMemoryCache.size > 1500) {
+        const firstKeys = Array.from(tmdbMemoryCache.keys()).slice(0, 300);
+        for (const k of firstKeys) tmdbMemoryCache.delete(k);
+      }
+      tmdbMemoryCache.set(cacheKey, {
+        data: result,
+        expiresAt: Date.now() + ttl,
+      });
+    }
 
     return result;
   } catch (error) {

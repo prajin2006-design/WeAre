@@ -29,7 +29,16 @@ export async function getSeriesCredits(tmdbId: number): Promise<TMDBCredits | nu
 }
 
 export async function getSeriesRecommendations(tmdbId: number): Promise<TMDBSeries[]> {
-  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBSeries>>(`/tv/${tmdbId}/recommendations`);
+  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBSeries>>(`/tv/${tmdbId}/recommendations`, {
+    revalidateSeconds: 86400,
+  });
+  return data?.results || [];
+}
+
+export async function getSimilarSeries(tmdbId: number): Promise<TMDBSeries[]> {
+  const data = await tmdbFetch<TMDBPaginatedResponse<TMDBSeries>>(`/tv/${tmdbId}/similar`, {
+    revalidateSeconds: 86400,
+  });
   return data?.results || [];
 }
 

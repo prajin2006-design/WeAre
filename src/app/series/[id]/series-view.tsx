@@ -4,11 +4,20 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Plus, Check, Star, Calendar, Clock, Film } from "lucide-react";
-import { Series, Season } from "@/types/content";
+import { Series, Season, ContentItem } from "@/types/content";
 import { useUserContent } from "@/lib/context/user-content-context";
 import Badge from "@/components/ui/Badge";
+import ContentRow from "@/components/movies/ContentRow";
 
-export default function SeriesView({ series, initialSeason }: { series: Series; initialSeason?: number }) {
+export default function SeriesView({
+  series,
+  initialSeason,
+  recommended = [],
+}: {
+  series: Series;
+  initialSeason?: number;
+  recommended?: ContentItem[];
+}) {
   const { isInList, toggleMyList } = useUserContent();
   const inList = isInList(series.id);
 
@@ -318,6 +327,17 @@ export default function SeriesView({ series, initialSeason }: { series: Series; 
             </div>
           )}
         </div>
+
+        {/* Recommended Content Row */}
+        {recommended && recommended.length > 0 && (
+          <div className="mt-16 border-t border-border/40 pt-10">
+            <ContentRow
+              title="Recommended Content"
+              subtitle={`Titles recommended for fans of ${series.title}`}
+              items={recommended}
+            />
+          </div>
+        )}
       </div>
     </>
   );
