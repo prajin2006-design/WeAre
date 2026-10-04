@@ -168,10 +168,6 @@ body {
 /* Button base reset */
 button {
   cursor: pointer;
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
 }
 
 a {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/components/ui/Toast";
+import Switch from "@/components/ui/Switch";
 import {
   Settings,
   Sliders,
@@ -79,19 +80,12 @@ export default function SettingsPage() {
                       Automatically play the next episode when watching a series
                     </p>
                   </div>
-                  <button
-                    onClick={() => setAutoplayNext(!autoplayNext)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      autoplayNext ? "bg-accent" : "bg-surface border border-border"
-                    }`}
-                    aria-label="Toggle autoplay next episode"
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        autoplayNext ? "translate-x-6" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
+                  <Switch
+                    id="autoplay-next"
+                    checked={autoplayNext}
+                    onChange={setAutoplayNext}
+                    ariaLabel="Toggle autoplay next episode"
+                  />
                 </div>
 
                 {/* Autoplay Previews */}
@@ -102,19 +96,12 @@ export default function SettingsPage() {
                       Play teaser video trailers while browsing movie cards
                     </p>
                   </div>
-                  <button
-                    onClick={() => setAutoplayPreview(!autoplayPreview)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      autoplayPreview ? "bg-accent" : "bg-surface border border-border"
-                    }`}
-                    aria-label="Toggle video preview autoplay"
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        autoplayPreview ? "translate-x-6" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
+                  <Switch
+                    id="autoplay-preview"
+                    checked={autoplayPreview}
+                    onChange={setAutoplayPreview}
+                    ariaLabel="Toggle video preview autoplay"
+                  />
                 </div>
 
                 {/* Video Quality */}
@@ -279,19 +266,12 @@ export default function SettingsPage() {
                       Allows Continue Watching to remember your last playback second
                     </p>
                   </div>
-                  <button
-                    onClick={() => setShareWatchHistory(!shareWatchHistory)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      shareWatchHistory ? "bg-accent" : "bg-surface border border-border"
-                    }`}
-                    aria-label="Toggle watch history"
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        shareWatchHistory ? "translate-x-6" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
+                  <Switch
+                    id="share-watch-history"
+                    checked={shareWatchHistory}
+                    onChange={setShareWatchHistory}
+                    ariaLabel="Toggle watch history"
+                  />
                 </div>
               </div>
             </div>
