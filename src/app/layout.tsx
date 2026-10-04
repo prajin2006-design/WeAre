@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   description:
     "WeAre is a modern streaming platform. Watch the latest movies, original series, and exclusive content in 4K HDR.",
   keywords: ["streaming", "movies", "series", "WeAre", "watch online", "cinema"],
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
