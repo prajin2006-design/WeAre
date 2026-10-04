@@ -159,12 +159,12 @@ export default function AdminDashboardPage() {
                   }
                 }}
                 disabled={importing}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-xs sm:text-sm font-bold text-white hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-on-primary bg-surface/80 px-5 py-3 text-xs sm:text-sm font-bold text-foreground hover:border-accent hover:text-accent hover:bg-accent/10 active:scale-95 transition-all disabled:opacity-50"
               >
                 {importing ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-weare-primary" />
+                  <Loader2 className="h-4 w-4 animate-spin text-accent" />
                 ) : (
-                  <Sparkles className="h-4 w-4 text-weare-primary" />
+                  <Sparkles className="h-4 w-4 text-accent" />
                 )}
                 <span>{importing ? "Importing TMDB (20 movies, 10 series)..." : "Import from TMDB"}</span>
               </button>
@@ -506,7 +506,7 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-white"
+                  className="rounded-xl border border-on-primary px-4 py-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent transition-colors"
                 >
                   Cancel
                 </button>

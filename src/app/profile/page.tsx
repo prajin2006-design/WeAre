@@ -255,7 +255,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={handleOpenEditProfile}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-background/80 hover:bg-surface px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-md active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl border border-on-primary bg-surface/80 hover:border-accent hover:text-accent px-4 py-2.5 text-xs font-semibold text-foreground transition-all shadow-md active:scale-95"
               >
                 <Edit3 className="w-3.5 h-3.5 text-accent" />
                 <span>Edit Profile</span>
@@ -356,7 +356,7 @@ export default function ProfilePage() {
                   setPasswordError(null);
                   setIsChangingPassword(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-surface transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-on-primary px-3.5 py-1.5 text-xs font-semibold text-foreground hover:border-accent hover:text-accent hover:bg-surface transition-colors"
               >
                 Change Password
               </button>
@@ -690,7 +690,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/20 active:scale-95 transition-all shadow-sm"
+                  className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:text-red-300 active:scale-95 transition-all shadow-sm"
                 >
                   Sign Out
                 </button>
@@ -764,7 +764,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-white hover:bg-surface transition-colors"
+                  className="rounded-xl border border-on-primary px-4 py-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent hover:bg-surface transition-colors"
                 >
                   Cancel
                 </button>
@@ -840,7 +840,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsChangingPassword(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-white hover:bg-surface transition-colors"
+                  className="rounded-xl border border-on-primary px-4 py-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent hover:bg-surface transition-colors"
                 >
                   Cancel
                 </button>

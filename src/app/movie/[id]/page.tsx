@@ -171,15 +171,15 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
                 {hasPlayableSource ? (
                   <Link
                     href={`/watch/${content.id}`}
-                    className="flex items-center gap-3 rounded-lg bg-white px-9 py-4 text-xs sm:text-sm font-black tracking-wider uppercase text-black hover:bg-accent active:scale-95 transition-all cta-white-glow shadow-2xl"
+                    className="flex items-center gap-3 rounded-lg bg-accent px-9 py-4 text-xs sm:text-sm font-black tracking-wider uppercase text-black hover:bg-accent-hover active:scale-95 active:bg-[#E67600] transition-all cta-primary-glow shadow-2xl"
                   >
-                    <Play className="h-4 w-4 fill-black" />
+                    <Play className="h-4 w-4 fill-black text-black" />
                     <span>WATCH NOW</span>
                   </Link>
                 ) : (
                   <button
                     disabled
-                    className="flex items-center gap-2.5 rounded-lg border border-white/20 bg-white/5 px-7 py-3.5 text-xs sm:text-sm font-mono tracking-wider uppercase text-muted cursor-not-allowed"
+                    className="flex items-center gap-2.5 rounded-lg border border-on-primary/40 bg-surface/50 px-7 py-3.5 text-xs sm:text-sm font-mono tracking-wider uppercase text-on-primary cursor-not-allowed"
                     title="No video stream is currently available for this title."
                   >
                     <Film className="h-4 w-4" />

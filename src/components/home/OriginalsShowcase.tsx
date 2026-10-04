@@ -102,9 +102,9 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
               <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/40">
                 <Link
                   href={`/watch/${leadItem.id}`}
-                  className="inline-flex items-center gap-2.5 rounded-lg bg-white px-6 py-3 text-xs sm:text-sm font-bold text-black hover:bg-accent active:scale-95 transition-all shadow-lg"
+                  className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-6 py-3 text-xs sm:text-sm font-bold text-black hover:bg-accent-hover active:bg-[#E67600] active:scale-95 transition-all shadow-lg"
                 >
-                  <Play className="h-4 w-4 fill-current" />
+                  <Play className="h-4 w-4 fill-black text-black" />
                   <span>WATCH FEATURE</span>
                 </Link>
 
@@ -114,7 +114,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                   className={`inline-flex items-center gap-2 rounded-lg border px-5 py-3 text-xs sm:text-sm font-medium transition-colors ${
                     inListLead
                       ? "border-accent text-accent bg-accent/10"
-                      : "border-border text-foreground hover:border-white/40"
+                      : "border-on-primary text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
                   }`}
                 >
                   {inListLead ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -123,7 +123,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
 
                 <Link
                   href={leadDetailsUrl}
-                  className="ml-auto text-xs font-mono text-muted hover:text-white transition-colors"
+                  className="ml-auto text-xs font-mono text-muted hover:text-foreground transition-colors"
                 >
                   CREDITS & DETAILS →
                 </Link>
@@ -157,8 +157,8 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
                       className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
                       aria-label={`View details for ${item.title}`}
                     >
-                      <div className="h-8 w-8 rounded-full bg-white text-black flex items-center justify-center">
-                        <Play className="h-3.5 w-3.5 fill-black translate-x-0.5" />
+                      <div className="h-8 w-8 rounded-full bg-accent text-black flex items-center justify-center hover:bg-accent-hover transition-colors">
+                        <Play className="h-3.5 w-3.5 fill-black text-black translate-x-0.5" />
                       </div>
                     </Link>
                   </div>

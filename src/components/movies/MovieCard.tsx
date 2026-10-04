@@ -54,7 +54,7 @@ export default function MovieCard({ movie, priority = false }: MovieCardProps) {
           className={`absolute top-2 right-2 z-20 h-7 w-7 rounded flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all ${
             inList
               ? "bg-accent text-black opacity-100"
-              : "bg-black/70 text-white hover:bg-black"
+              : "bg-black/70 text-foreground hover:bg-black hover:text-accent"
           }`}
           title={inList ? "In My List" : "Save to List"}
         >
@@ -67,8 +67,8 @@ export default function MovieCard({ movie, priority = false }: MovieCardProps) {
           className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 group-hover/card:opacity-100 transition-opacity"
           aria-label={`View details for ${movie.title}`}
         >
-          <div className="h-11 w-11 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 active:scale-95">
-            <Play className="h-4 w-4 fill-black translate-x-0.5" />
+          <div className="h-11 w-11 rounded-full bg-accent text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 hover:bg-accent-hover active:bg-[#E67600] active:scale-95">
+            <Play className="h-4 w-4 fill-black text-black translate-x-0.5" />
           </div>
         </Link>
       </div>

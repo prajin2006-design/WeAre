@@ -13,13 +13,42 @@ export type NexStreamEmbedPlayerProps = {
   onTryVidFast?: () => void;
 };
 
+// Memoized Iframe component so controls hover and state updates do NOT recreate or reload the iframe DOM node
+const ProviderEmbedIframe = React.memo(function ProviderEmbedIframe({
+  src,
+  title,
+  serverName,
+  onLoad,
+  onError,
+}: {
+  src: string;
+  title?: string;
+  serverName: string;
+  onLoad: () => void;
+  onError: () => void;
+}) {
+  return (
+    <iframe
+      key={src}
+      src={src}
+      title={title || `${serverName} Stream`}
+      className="w-full h-full border-0 object-contain bg-black"
+      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+      allowFullScreen
+      referrerPolicy="origin-when-cross-origin"
+      onLoad={onLoad}
+      onError={onError}
+    />
+  );
+});
+
 export default function NexStreamEmbedPlayer({
   src,
   title,
   serverName = "VidFast",
   qualityBadge = "EMBED • Auto",
   onTryAlternative,
-  alternativeName = "NexStream Fast",
+  alternativeName,
   onTryVidFast,
 }: NexStreamEmbedPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +58,15 @@ export default function NexStreamEmbedPlayer({
   const [showControls, setShowControls] = useState<boolean>(true);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const fallbackServerName =
+    alternativeName || (serverName.toLowerCase().includes("vidfast") ? "NexStream Fast" : "VidFast");
   const fallbackHandler = onTryAlternative || onTryVidFast;
+
+  // Reset loading and error state strictly when provider src URL changes
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+  }, [src]);
 
   const handleIframeLoad = useCallback(() => {
     setIsLoading(false);
@@ -87,16 +124,12 @@ export default function NexStreamEmbedPlayer({
       onMouseMove={handleMouseMove}
       className="group relative w-full h-full aspect-video bg-black select-none overflow-hidden flex items-center justify-center font-sans"
     >
-      {/* Active Embed Iframe */}
+      {/* Active Single Provider Iframe */}
       {!hasError && src && (
-        <iframe
-          key={src}
+        <ProviderEmbedIframe
           src={src}
-          title={title || `${serverName} Stream`}
-          className="w-full h-full border-0 object-contain bg-black"
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          allowFullScreen
-          referrerPolicy="origin-when-cross-origin"
+          title={title}
+          serverName={serverName}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
@@ -119,16 +152,16 @@ export default function NexStreamEmbedPlayer({
           </div>
           <h3 className="text-lg font-bold text-white mb-1.5">{serverName} is unavailable</h3>
           <p className="text-xs text-muted max-w-md mb-6 leading-relaxed">
-            The {serverName} playback server could not be reached. You can switch to {alternativeName} or try again later.
+            The {serverName} playback server could not be reached. You can switch to {fallbackServerName} or try again later.
           </p>
 
           {fallbackHandler && (
             <button
               onClick={fallbackHandler}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:scale-95 transition-all shadow-lg shadow-accent/20"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] active:scale-95 transition-all shadow-lg shadow-accent/20"
             >
               <Server className="h-4 w-4" />
-              <span>{`Try ${alternativeName || "NexStream Fast"}`}</span>
+              <span>{`Try ${fallbackServerName}`}</span>
             </button>
           )}
         </div>
@@ -159,17 +192,17 @@ export default function NexStreamEmbedPlayer({
             {fallbackHandler && (
               <button
                 onClick={fallbackHandler}
-                className="flex items-center gap-1.5 rounded-xl border border-white/20 bg-black/60 px-3.5 py-1.5 text-xs font-semibold text-white/90 hover:text-white hover:border-accent/50 backdrop-blur-md transition-all active:scale-95"
-                title={`Switch to ${alternativeName} server`}
+                className="flex items-center gap-1.5 rounded-xl border border-on-primary/60 bg-black/60 px-3.5 py-1.5 text-xs font-semibold text-foreground hover:text-accent hover:border-accent backdrop-blur-md transition-all active:scale-95"
+                title={`Switch to ${fallbackServerName} server`}
               >
                 <Server className="h-3.5 w-3.5 text-accent" />
-                <span>{`Try ${alternativeName || "NexStream Fast"}`}</span>
+                <span>{`Try ${fallbackServerName}`}</span>
               </button>
             )}
 
             <button
               onClick={toggleFullscreen}
-              className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all active:scale-95 bg-black/40 backdrop-blur-md border border-white/10"
+              className="p-2 text-foreground/80 hover:text-accent hover:bg-surface-hover rounded-xl transition-all active:scale-95 bg-black/40 backdrop-blur-md border border-on-primary/40"
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
               title="Toggle Fullscreen"
             >
@@ -185,3 +218,4 @@ export default function NexStreamEmbedPlayer({
     </div>
   );
 }
+

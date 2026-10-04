@@ -95,50 +95,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Render the secure embed document with isolated framing
-  const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>WeAre Player - NexStream</title>
-    <style>
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000;
-        overflow: hidden;
-      }
-      iframe {
-        width: 100%;
-        height: 100%;
-        border: 0;
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe
-      src="${embedUrl}"
-      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-      allowfullscreen
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
-  </body>
-</html>`;
-
-  return new NextResponse(html, {
-    status: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "X-Frame-Options": "SAMEORIGIN",
-      "Referrer-Policy": "strict-origin-when-cross-origin",
-      "Cache-Control": "private, no-cache, no-store, must-revalidate",
-    },
-  });
+  // Direct 307 redirect to the authorized provider embed URL
+  // Eliminates duplicate nested iframes and prevents redundant inner document loading
+  return NextResponse.redirect(embedUrl, 307);
 }
 
 function renderErrorHtml(title: string, message: string): string {

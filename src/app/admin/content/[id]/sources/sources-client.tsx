@@ -149,7 +149,7 @@ export default function AdminSourcesClient({
         <div className="flex items-center gap-3">
           <Link
             href={`/watch/${content.id}`}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/15 active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 rounded-xl border border-on-primary bg-surface/80 px-4 py-2.5 text-xs font-bold text-foreground hover:border-accent hover:text-accent hover:bg-accent/10 active:scale-95 transition-all"
           >
             <Play className="h-4 w-4" />
             <span>Test Watch Player</span>
@@ -378,7 +378,7 @@ export default function AdminSourcesClient({
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-white"
+                  className="rounded-xl border border-on-primary px-4 py-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent transition-colors"
                 >
                   Cancel
                 </button>

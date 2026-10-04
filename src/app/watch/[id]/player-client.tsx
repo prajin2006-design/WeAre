@@ -156,7 +156,8 @@ export default function WatchPlayerClient({
   const defaultSource = vidFastSource || (orderedSources.length > 0 ? orderedSources[0] : null);
 
   const [activeSource, setActiveSource] = useState<VideoSource | null>(defaultSource);
-  const [currentPlaybackPos, setCurrentPlaybackPos] = useState<number>(0);
+  // Use a ref for playback position tracking so interval updates do NOT re-render the Watch page or iframe
+  const playbackPosRef = useRef<number>(0);
 
   // Track media identity to reset back to VidFast default when opening a NEW title
   // while preserving user selection (e.g. manual NexStream switch) during the current session
@@ -271,7 +272,7 @@ export default function WatchPlayerClient({
     // Progress reset & resume check for the new episode
     const newSaved = getProgress(content.id, newEp.id);
     const newSavedPos = newSaved?.current_position || 0;
-    setCurrentPlaybackPos(newSavedPos > 15 ? newSavedPos : 0);
+    playbackPosRef.current = newSavedPos > 15 ? newSavedPos : 0;
     setShowResumeBanner(newSavedPos > 15);
 
     // Timers
@@ -453,7 +454,7 @@ export default function WatchPlayerClient({
             : contentDuration;
 
         if (typeof reportedTime === "number" && reportedTime >= 0) {
-          setCurrentPlaybackPos(reportedTime);
+          playbackPosRef.current = reportedTime;
           const now = Date.now();
           if (now - lastSaveRef.current > 8000) {
             lastSaveRef.current = now;
@@ -462,7 +463,7 @@ export default function WatchPlayerClient({
         }
 
         if (msg.event === "pause" || msg.type === "pause") {
-          const pos = typeof reportedTime === "number" ? reportedTime : currentPlaybackPos;
+          const pos = typeof reportedTime === "number" ? reportedTime : playbackPosRef.current;
           if (pos > 0) {
             saveProgress(content, pos, reportedDuration, currentEpisode);
           }
@@ -478,9 +479,9 @@ export default function WatchPlayerClient({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [content, currentEpisode, contentDuration, currentPlaybackPos, saveProgress]);
+  }, [content, currentEpisode, contentDuration, saveProgress]);
 
-  // Periodic time-on-page progress tracking (every 8 seconds)
+  // Periodic time-on-page progress tracking (every 8 seconds) without triggering React re-renders
   useEffect(() => {
     const interval = setInterval(() => {
       if (document.visibilityState !== "visible") return;
@@ -489,7 +490,7 @@ export default function WatchPlayerClient({
         contentDuration * 0.95, // Cap at 95% to avoid marking complete until finished
         (savedPosition > 15 ? savedPosition : 0) + elapsedSinceOpen
       );
-      setCurrentPlaybackPos(estimatedPosition);
+      playbackPosRef.current = estimatedPosition;
 
       const now = Date.now();
       if (now - lastSaveRef.current > 8000) {
@@ -540,13 +541,13 @@ export default function WatchPlayerClient({
 
   // Resume vs Start Over
   const handleResume = () => {
-    setCurrentPlaybackPos(savedPosition);
+    playbackPosRef.current = savedPosition;
     setShowResumeBanner(false);
     showToast(`Resumed from ${formatTime(savedPosition)}`, "info");
   };
 
   const handleStartOver = () => {
-    setCurrentPlaybackPos(0);
+    playbackPosRef.current = 0;
     setShowResumeBanner(false);
     showToast("Starting over from beginning", "info");
   };
@@ -633,7 +634,7 @@ export default function WatchPlayerClient({
                 </button>
                 <button
                   onClick={handleStartOver}
-                  className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-surface/80 px-3.5 py-1.5 font-semibold text-white hover:bg-surface active:scale-95 transition-all"
+                  className="flex items-center gap-1.5 rounded-lg border border-on-primary bg-surface/80 px-3.5 py-1.5 font-semibold text-foreground hover:border-accent hover:text-accent hover:bg-accent/10 active:scale-95 transition-all"
                 >
                   <RotateCcw className="h-3 w-3" />
                   <span>Start Over</span>
@@ -680,7 +681,7 @@ export default function WatchPlayerClient({
                           className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all active:scale-95 ${
                             isActive
                               ? "bg-accent text-black shadow-md shadow-accent/20"
-                              : "border border-border/80 bg-surface text-foreground/80 hover:text-white hover:border-border hover:bg-surface-hover"
+                              : "border border-on-primary/60 bg-surface text-foreground/90 hover:text-accent hover:border-accent hover:bg-accent/10"
                           }`}
                         >
                           {isActive && <CheckCircle2 className="h-3.5 w-3.5" />}
@@ -689,7 +690,7 @@ export default function WatchPlayerClient({
                             className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
                               isActive
                                 ? "bg-black/20 text-black font-semibold"
-                                : "bg-white/10 text-muted"
+                                : "bg-surface/80 text-muted"
                             }`}
                           >
                             {badgeText}
@@ -708,7 +709,7 @@ export default function WatchPlayerClient({
                         type="button"
                         onClick={handlePreviousEpisode}
                         disabled={isLoadingEpisodes}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-border/70 bg-surface px-3 py-1.5 text-xs font-semibold text-white hover:bg-surface-hover hover:text-accent transition-colors disabled:opacity-40"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-on-primary/60 bg-surface px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-surface-hover hover:border-accent hover:text-accent transition-colors disabled:opacity-40"
                       >
                         <SkipBack className="h-3.5 w-3.5" />
                         <span>Previous Ep</span>
@@ -849,7 +850,7 @@ export default function WatchPlayerClient({
                             type="button"
                             onClick={handlePreviousEpisode}
                             disabled={isLoadingEpisodes}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-surface/80 px-3 py-2 text-xs font-semibold text-white hover:text-accent hover:border-accent/50 hover:bg-surface transition-all active:scale-95 disabled:opacity-40"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-on-primary/60 bg-surface/80 px-3 py-2 text-xs font-semibold text-foreground hover:text-accent hover:border-accent hover:bg-surface transition-all active:scale-95 disabled:opacity-40"
                             title="Previous Episode"
                           >
                             <SkipBack className="h-3.5 w-3.5" />
@@ -938,7 +939,7 @@ export default function WatchPlayerClient({
                 className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all active:scale-95 ${
                   inList
                     ? "border-accent bg-accent/20 text-accent"
-                    : "border-border/80 bg-surface/80 text-white hover:bg-surface"
+                    : "border-on-primary/70 bg-surface/80 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
                 }`}
               >
                 {inList ? <Check className="h-4 w-4 stroke-[2.5]" /> : <Plus className="h-4 w-4" />}
@@ -948,7 +949,7 @@ export default function WatchPlayerClient({
               {/* Share */}
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 rounded-xl border border-border/80 bg-surface/80 px-4 py-2.5 text-xs font-bold text-white hover:bg-surface transition-all active:scale-95"
+                className="flex items-center gap-2 rounded-xl border border-on-primary/70 bg-surface/80 px-4 py-2.5 text-xs font-bold text-foreground hover:border-accent hover:text-accent hover:bg-accent/10 transition-all active:scale-95"
               >
                 <Share2 className="h-4 w-4" />
                 <span>{copied ? "Copied!" : "Share"}</span>
@@ -957,7 +958,7 @@ export default function WatchPlayerClient({
               {/* Report Issue */}
               <button
                 onClick={() => setShowReportModal(true)}
-                className="flex items-center gap-2 rounded-xl border border-border/80 bg-surface/80 px-4 py-2.5 text-xs font-bold text-muted hover:text-white hover:bg-surface transition-all active:scale-95"
+                className="flex items-center gap-2 rounded-xl border border-on-primary/70 bg-surface/80 px-4 py-2.5 text-xs font-bold text-muted hover:border-accent hover:text-accent hover:bg-accent/10 transition-all active:scale-95"
               >
                 <AlertCircle className="h-4 w-4" />
                 <span>Report Issue</span>
@@ -1019,14 +1020,14 @@ export default function WatchPlayerClient({
                 <button
                   type="button"
                   onClick={() => setShowReportModal(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-white"
+                  className="rounded-xl border border-on-primary px-4 py-2 text-xs font-semibold text-foreground hover:border-accent hover:text-accent"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!reportReason || reportSuccess}
-                  className="rounded-xl bg-accent px-5 py-2 text-xs font-bold text-black hover:bg-accent-hover transition-all disabled:opacity-50"
+                  className="rounded-xl bg-accent px-5 py-2 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] transition-all disabled:bg-on-primary disabled:text-black disabled:opacity-50"
                 >
                   {reportSuccess ? "Submitted!" : "Submit Report"}
                 </button>

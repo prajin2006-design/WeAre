@@ -224,8 +224,8 @@ export default function DynamicCatalogView({
                 href={cat.path}
                 className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                   isCurrent
-                    ? "bg-white text-black shadow-lg"
-                    : "border border-border/60 bg-surface/60 text-muted hover:text-white hover:border-border"
+                    ? "bg-accent text-black shadow-lg"
+                    : "border border-on-primary/60 bg-surface/60 text-foreground/80 hover:text-accent hover:border-accent"
                 }`}
               >
                 <Icon className={`h-3.5 w-3.5 ${isCurrent ? "text-black" : "text-accent"}`} />
@@ -311,7 +311,7 @@ export default function DynamicCatalogView({
               <button
                 onClick={handleLoadMore}
                 disabled={loadingMore}
-                className="group inline-flex items-center gap-2.5 rounded-2xl border border-border/80 bg-surface/90 px-8 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:border-accent hover:bg-surface hover:text-accent disabled:opacity-50 shadow-xl shadow-black/50"
+                className="group inline-flex items-center gap-2.5 rounded-2xl border border-on-primary/60 bg-surface/90 px-8 py-3.5 text-sm font-bold text-foreground backdrop-blur-md transition-all hover:border-accent hover:bg-surface hover:text-accent disabled:opacity-50 shadow-xl shadow-black/50"
               >
                 {loadingMore ? (
                   <>

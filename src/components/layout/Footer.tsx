@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Film, Tv, Video, Globe } from "lucide-react";
 
 const footerSections = [
   {
@@ -39,60 +38,21 @@ const footerSections = [
   },
 ];
 
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com",
-    icon: Film,
-  },
-  {
-    label: "YouTube",
-    href: "https://youtube.com",
-    icon: Video,
-  },
-  {
-    label: "X (Twitter)",
-    href: "https://x.com",
-    icon: Tv,
-  },
-  {
-    label: "GitHub",
-    href: "https://github.com",
-    icon: Globe,
-  },
-];
-
 export default function Footer() {
   return (
     <footer className="border-t border-border/50 bg-background/95 mt-auto">
       <div className="mx-auto max-w-[1800px] px-4 py-12 sm:px-6 sm:py-16 lg:px-12">
-        {/* Brand & Socials Header */}
-        <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-8 border-b border-border/40">
-          <div>
-            <Link href="/" className="flex items-center gap-1">
-              <span className="text-accent text-2xl font-black tracking-tighter">WE</span>
-              <span className="text-foreground text-2xl font-light tracking-widest pl-0.5">ARE</span>
-            </Link>
-            <p className="text-xs text-muted mt-1 max-w-sm leading-relaxed">
-              Original cinematic streaming platform built for high-fidelity entertainment, 4K HDR, and creator-led storytelling.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 bg-surface/50 text-muted transition-all hover:text-accent hover:border-accent/50 hover:bg-surface active:scale-95"
-                aria-label={`Visit WeAre on ${label}`}
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
+        {/* Brand Header */}
+        <div className="mb-10 pb-8 border-b border-border/40">
+          <Link href="/" className="flex items-center gap-1">
+            <span className="text-accent text-2xl font-black tracking-tighter">WE</span>
+            <span className="text-foreground text-2xl font-light tracking-widest pl-0.5">ARE</span>
+          </Link>
+          <p className="text-xs text-muted mt-1 max-w-sm leading-relaxed">
+            Original cinematic streaming platform built for high-fidelity entertainment, 4K HDR, and creator-led storytelling.
+          </p>
         </div>
+
 
         {/* Link Columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">

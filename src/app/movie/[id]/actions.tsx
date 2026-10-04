@@ -39,7 +39,7 @@ export default function MovieDetailActions({ content }: { content: ContentItem }
           <button
             type="button"
             onClick={() => setShowTrailerModal(true)}
-            className="flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3.5 text-sm sm:text-base font-semibold text-white backdrop-blur-md hover:bg-white/20 active:scale-95 transition-all shadow-md"
+            className="flex items-center gap-2 rounded-xl border border-on-primary bg-surface/80 px-5 py-3.5 text-sm sm:text-base font-semibold text-foreground backdrop-blur-md hover:border-accent hover:text-accent hover:bg-accent/10 active:scale-95 transition-all shadow-md"
           >
             <Film className="h-5 w-5 text-accent" />
             <span>Trailer</span>
@@ -53,7 +53,7 @@ export default function MovieDetailActions({ content }: { content: ContentItem }
           className={`flex items-center gap-2 rounded-xl border px-6 py-3.5 text-sm sm:text-base font-semibold backdrop-blur-md transition-all active:scale-95 shadow-md ${
             inList
               ? "border-accent bg-accent/20 text-accent"
-              : "border-border/80 bg-surface/80 text-white hover:bg-surface hover:border-white/40"
+              : "border-on-primary bg-surface/80 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
           }`}
           aria-label={inList ? "In My List" : "Add to My List"}
         >
@@ -74,7 +74,7 @@ export default function MovieDetailActions({ content }: { content: ContentItem }
         <button
           type="button"
           onClick={handleShare}
-          className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/80 bg-surface/80 text-white hover:bg-surface hover:border-white/40 active:scale-95 transition-all shadow-md"
+          className="flex h-12 w-12 items-center justify-center rounded-xl border border-on-primary bg-surface/80 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10 active:scale-95 transition-all shadow-md"
           title="Share title"
           aria-label="Share movie link"
         >

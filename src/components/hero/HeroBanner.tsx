@@ -210,9 +210,9 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                 {/* PRIMARY CTA: Unmistakable Playback Action */}
                 <Link
                   href={watchUrl}
-                  className="group flex items-center gap-2.5 rounded-lg bg-white px-7 py-3.5 text-xs sm:text-sm font-black tracking-wider uppercase text-black transition-all hover:bg-accent hover:scale-102 active:scale-98 cta-white-glow shadow-xl"
+                  className="group flex items-center gap-2.5 rounded-lg bg-accent px-7 py-3.5 text-xs sm:text-sm font-black tracking-wider uppercase text-black transition-all hover:bg-accent-hover hover:scale-102 active:scale-98 active:bg-[#E67600] cta-primary-glow shadow-xl"
                 >
-                  <Play className="h-4 w-4 fill-black group-hover:translate-x-0.5 transition-transform" />
+                  <Play className="h-4 w-4 fill-black text-black group-hover:translate-x-0.5 transition-transform" />
                   <span>{isFilm ? "STREAM FILM" : "STREAM SERIES"}</span>
                 </Link>
 
@@ -223,7 +223,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                   className={`flex items-center gap-2 rounded-lg border px-5 py-3.5 text-xs sm:text-sm font-mono tracking-wider uppercase transition-all backdrop-blur-md active:scale-98 ${
                     inList
                       ? "border-accent bg-accent/15 text-accent"
-                      : "border-white/20 bg-black/40 text-white hover:border-white/50 hover:bg-white/10"
+                      : "border-on-primary bg-black/40 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
                   }`}
                   aria-label={inList ? "In My List" : "Add to My List"}
                 >
@@ -234,7 +234,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                 {/* TERTIARY ACTION: Details Page (MUST NOT open Watch) */}
                 <Link
                   href={detailsUrl}
-                  className="group flex items-center gap-1.5 px-3 py-3.5 text-xs font-mono tracking-widest uppercase text-muted hover:text-white transition-colors"
+                  className="group flex items-center gap-1.5 px-3 py-3.5 text-xs font-mono tracking-widest uppercase text-muted hover:text-foreground transition-colors"
                 >
                   <span>DETAILS</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -258,7 +258,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                         className={`h-1.5 rounded-full transition-all duration-300 ${
                           isSelected
                             ? "w-7 sm:w-9 bg-accent shadow-sm shadow-accent/50"
-                            : "w-2.5 sm:w-3 bg-white/25 hover:bg-white/50"
+                            : "w-2.5 sm:w-3 bg-muted/40 hover:bg-muted"
                         }`}
                       />
                     );
@@ -267,7 +267,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
 
                 {/* Numerical Counter */}
                 <span className="font-mono text-xs text-muted/80 select-none">
-                  <span className="text-white font-bold">{String(safeIndex + 1).padStart(2, "0")}</span>
+                  <span className="text-foreground font-bold">{String(safeIndex + 1).padStart(2, "0")}</span>
                   {" / "}
                   <span>{String(slides.length).padStart(2, "0")}</span>
                 </span>
@@ -277,7 +277,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                   <button
                     type="button"
                     onClick={handlePrev}
-                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-black/60 border border-white/20 text-white hover:text-accent hover:border-accent hover:bg-black/90 flex items-center justify-center transition-all active:scale-95 backdrop-blur-sm shadow-md"
+                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-black/60 border border-on-primary text-foreground hover:text-accent hover:border-accent hover:bg-black/90 flex items-center justify-center transition-all active:scale-95 backdrop-blur-sm shadow-md"
                     aria-label="Previous title"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -285,7 +285,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-black/60 border border-white/20 text-white hover:text-accent hover:border-accent hover:bg-black/90 flex items-center justify-center transition-all active:scale-95 backdrop-blur-sm shadow-md"
+                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-black/60 border border-on-primary text-foreground hover:text-accent hover:border-accent hover:bg-black/90 flex items-center justify-center transition-all active:scale-95 backdrop-blur-sm shadow-md"
                     aria-label="Next title"
                   >
                     <ChevronRight className="h-4 w-4" />

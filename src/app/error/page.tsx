@@ -33,7 +33,7 @@ export default function ErrorPageRoute() {
             </button>
             <Link
               href="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-6 py-3 text-xs sm:text-sm font-bold text-white hover:bg-surface-hover transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-on-primary bg-surface px-6 py-3 text-xs sm:text-sm font-bold text-foreground hover:border-accent hover:text-accent transition-all"
             >
               <Home className="h-4 w-4" />
               <span>Back to Lobby</span>

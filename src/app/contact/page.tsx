@@ -154,7 +154,7 @@ function ContactForm() {
                 setSubmitted(false);
                 setMessage("");
               }}
-              className="rounded-xl border border-border bg-surface px-5 py-2.5 text-xs font-bold text-white hover:bg-surface-hover"
+              className="rounded-xl border border-on-primary bg-surface px-5 py-2.5 text-xs font-bold text-foreground hover:border-accent hover:text-accent transition-colors"
             >
               Send Another Message
             </button>

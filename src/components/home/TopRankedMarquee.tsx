@@ -156,10 +156,10 @@ export default function TopRankedMarquee({
 
                       <Link
                         href={playUrl}
-                        className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-accent hover:scale-110 active:scale-95 transition-all shadow-lg flex-shrink-0"
+                        className="h-10 w-10 rounded-full bg-accent text-black flex items-center justify-center hover:bg-accent-hover hover:scale-110 active:bg-[#E67600] active:scale-95 transition-all shadow-lg flex-shrink-0"
                         title={`Stream ${item.title}`}
                       >
-                        <Play className="h-4 w-4 fill-current translate-x-0.5" />
+                        <Play className="h-4 w-4 fill-black text-black translate-x-0.5" />
                       </Link>
                     </div>
                   </div>

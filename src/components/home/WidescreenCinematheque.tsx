@@ -104,7 +104,7 @@ export default function WidescreenCinematheque({
                     className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity"
                     aria-label={`View details for ${item.title}`}
                   >
-                    <div className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-110 active:scale-95">
+                    <div className="h-12 w-12 rounded-full bg-accent text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-110 hover:bg-accent-hover active:scale-95 active:bg-[#E67600]">
                       <Play className="h-5 w-5 fill-black translate-x-0.5" />
                     </div>
                   </Link>

@@ -179,15 +179,15 @@ export default function SeriesView({
               {currentSeason?.episodes?.[0] ? (
                 <Link
                   href={`/watch/${series.id}?ep=${currentSeason.episodes[0].id}`}
-                  className="flex items-center gap-2.5 rounded-xl bg-accent px-8 py-3.5 text-sm sm:text-base font-bold text-black transition-all hover:bg-accent-hover active:scale-95 shadow-xl shadow-accent/20"
+                  className="flex items-center gap-2.5 rounded-xl bg-accent px-8 py-3.5 text-sm sm:text-base font-bold text-black transition-all hover:bg-accent-hover active:bg-[#E67600] active:scale-95 shadow-xl shadow-accent/20"
                 >
-                  <Play className="h-5 w-5 fill-black" />
+                  <Play className="h-5 w-5 fill-black text-black" />
                   <span>Play Episode</span>
                 </Link>
               ) : (
                 <button
                   disabled
-                  className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-muted cursor-not-allowed"
+                  className="flex items-center gap-2 rounded-xl border border-on-primary/40 bg-surface/50 px-6 py-3.5 text-sm font-semibold text-on-primary cursor-not-allowed"
                 >
                   <span>Episodes Coming Soon</span>
                 </button>
@@ -199,7 +199,7 @@ export default function SeriesView({
                 className={`flex items-center gap-2 rounded-xl border px-6 py-3.5 text-sm sm:text-base font-semibold backdrop-blur-md transition-all active:scale-95 ${
                   inList
                     ? "border-accent bg-accent/20 text-accent"
-                    : "border-border/80 bg-surface/80 text-white hover:bg-surface"
+                    : "border-on-primary bg-surface/80 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
                 }`}
               >
                 {inList ? <Check className="h-5 w-5 stroke-[2.5]" /> : <Plus className="h-5 w-5" />}
@@ -235,7 +235,7 @@ export default function SeriesView({
                   className={`rounded-xl px-4 py-2 text-xs sm:text-sm font-bold transition-all ${
                     activeSeasonNumber === season.season_number
                       ? "bg-accent text-black shadow-md shadow-accent/20"
-                      : "bg-surface border border-border/60 text-muted hover:text-white"
+                      : "bg-surface border border-on-primary/60 text-muted hover:text-foreground hover:border-accent/40"
                   }`}
                 >
                   Season {season.season_number}
@@ -313,9 +313,9 @@ export default function SeriesView({
                   {/* Play Button */}
                   <Link
                     href={`/watch/${series.id}?ep=${ep.id}`}
-                    className="flex-shrink-0 inline-flex items-center gap-2 rounded-xl bg-surface border border-border px-4 py-2.5 text-xs font-bold text-white hover:bg-white hover:text-black hover:border-white transition-all active:scale-95"
+                    className="flex-shrink-0 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] transition-all active:scale-95"
                   >
-                    <Play className="h-3.5 w-3.5 fill-current" />
+                    <Play className="h-3.5 w-3.5 fill-black text-black" />
                     <span>Play Episode</span>
                   </Link>
                 </div>
