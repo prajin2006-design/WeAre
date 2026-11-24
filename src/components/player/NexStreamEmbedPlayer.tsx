@@ -160,7 +160,7 @@ export default function NexStreamEmbedPlayer({
           {fallbackHandler && (
             <button
               onClick={fallbackHandler}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] active:scale-95 transition-all shadow-lg shadow-accent/20"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-amber-600 active:scale-95 transition-all shadow-lg shadow-accent/20"
             >
               <Server className="h-4 w-4" />
               <span>{`Try ${fallbackServerName}`}</span>

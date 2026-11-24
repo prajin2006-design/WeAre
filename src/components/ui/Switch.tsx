@@ -49,16 +49,16 @@ export default function Switch({
       onKeyDown={handleKeyDown}
       className={`group relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40 select-none ${
         checked
-          ? "bg-accent shadow-[0_0_12px_rgba(255,135,9,0.35)] border border-accent/60"
-          : "bg-[#1E2320] border border-[#3A423D] hover:border-muted/60"
+          ? "bg-accent shadow-[0_0_14px_rgba(212,248,45,0.45)] border border-accent/70"
+          : "bg-surface border border-border hover:border-muted/60"
       } ${className}`}
     >
       <span
         aria-hidden="true"
         className={`pointer-events-none inline-block h-5 w-5 rounded-full shadow-md transition-transform duration-200 ease-in-out ${
           checked
-            ? "translate-x-5 bg-white shadow-black/40"
-            : "translate-x-0 bg-[#BBBAA6] shadow-black/30"
+            ? "translate-x-5 bg-black shadow-black/40"
+            : "translate-x-0 bg-muted/60 shadow-black/30"
         }`}
       />
     </button>

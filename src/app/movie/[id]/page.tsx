@@ -171,7 +171,7 @@ export default async function MovieDetailsPage({ params }: MoviePageProps) {
                 {hasPlayableSource ? (
                   <Link
                     href={`/watch/${content.id}`}
-                    className="flex items-center gap-3 rounded-lg bg-accent px-9 py-4 text-xs sm:text-sm font-black tracking-wider uppercase text-black hover:bg-accent-hover active:scale-95 active:bg-[#E67600] transition-all cta-primary-glow shadow-2xl"
+                    className="flex items-center gap-3 rounded-full bg-accent px-9 py-4 text-xs sm:text-sm font-black tracking-wider uppercase text-black hover:bg-accent-hover active:scale-95 active:bg-amber-600 transition-all cta-primary-glow shadow-2xl"
                   >
                     <Play className="h-4 w-4 fill-black text-black" />
                     <span>WATCH NOW</span>

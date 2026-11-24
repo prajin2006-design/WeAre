@@ -145,7 +145,7 @@ export default function ContinueWatchingRow() {
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity pointer-events-none">
                     <Link
                       href={playUrl}
-                      className="pointer-events-auto h-11 w-11 rounded-full bg-accent text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 hover:bg-accent-hover active:bg-[#E67600] active:scale-95"
+                      className="pointer-events-auto h-11 w-11 rounded-full bg-accent text-black flex items-center justify-center shadow-2xl transition-transform hover:scale-115 hover:bg-accent-hover active:bg-amber-600 active:scale-95"
                       title={`Resume ${item.title}`}
                     >
                       <Play className="h-4 w-4 fill-black text-black translate-x-0.5" />

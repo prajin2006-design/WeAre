@@ -182,7 +182,7 @@ export default function Navbar() {
 
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-1.5 text-xs font-bold text-black hover:bg-accent-hover active:scale-95 transition-all shadow-md shadow-accent/20"
+                className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-xs font-bold text-black hover:bg-accent-hover active:scale-95 transition-all shadow-md shadow-accent/25"
               >
                 <User className="h-3.5 w-3.5" />
                 <span>Sign In</span>

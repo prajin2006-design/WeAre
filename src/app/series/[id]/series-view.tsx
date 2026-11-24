@@ -179,7 +179,7 @@ export default function SeriesView({
               {currentSeason?.episodes?.[0] ? (
                 <Link
                   href={`/watch/${series.id}?ep=${currentSeason.episodes[0].id}`}
-                  className="flex items-center gap-2.5 rounded-xl bg-accent px-8 py-3.5 text-sm sm:text-base font-bold text-black transition-all hover:bg-accent-hover active:bg-[#E67600] active:scale-95 shadow-xl shadow-accent/20"
+                  className="flex items-center gap-2.5 rounded-full bg-accent px-8 py-3.5 text-sm sm:text-base font-bold text-black transition-all hover:bg-accent-hover active:bg-amber-600 active:scale-95 shadow-xl shadow-accent/20"
                 >
                   <Play className="h-5 w-5 fill-black text-black" />
                   <span>Play Episode</span>
@@ -313,7 +313,7 @@ export default function SeriesView({
                   {/* Play Button */}
                   <Link
                     href={`/watch/${series.id}?ep=${ep.id}`}
-                    className="flex-shrink-0 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] transition-all active:scale-95"
+                    className="flex-shrink-0 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-xs font-bold text-black hover:bg-accent-hover active:bg-amber-600 transition-all active:scale-95"
                   >
                     <Play className="h-3.5 w-3.5 fill-black text-black" />
                     <span>Play Episode</span>

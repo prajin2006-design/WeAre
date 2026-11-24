@@ -973,7 +973,7 @@ export default function WatchPlayerClient({
                 <button
                   type="submit"
                   disabled={!reportReason || reportSuccess}
-                  className="rounded-xl bg-accent px-5 py-2 text-xs font-bold text-black hover:bg-accent-hover active:bg-[#E67600] transition-all disabled:bg-on-primary disabled:text-black disabled:opacity-50"
+                  className="rounded-full bg-accent px-6 py-2 text-xs font-bold text-black hover:bg-accent-hover active:bg-amber-600 transition-all disabled:bg-on-primary disabled:text-black disabled:opacity-50"
                 >
                   {reportSuccess ? "Submitted!" : "Submit Report"}
                 </button>

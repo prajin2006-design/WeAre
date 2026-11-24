@@ -102,7 +102,7 @@ export default function OriginalsShowcase({ items }: OriginalsShowcaseProps) {
               <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/40">
                 <Link
                   href={`/watch/${leadItem.id}`}
-                  className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-6 py-3 text-xs sm:text-sm font-bold text-black hover:bg-accent-hover active:bg-[#E67600] active:scale-95 transition-all shadow-lg"
+                  className="inline-flex items-center gap-2.5 rounded-full bg-accent px-7 py-3 text-xs sm:text-sm font-bold text-black hover:bg-accent-hover active:bg-amber-600 active:scale-95 transition-all shadow-lg"
                 >
                   <Play className="h-4 w-4 fill-black text-black" />
                   <span>WATCH FEATURE</span>

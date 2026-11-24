@@ -210,7 +210,7 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                 {/* PRIMARY CTA: Unmistakable Playback Action */}
                 <Link
                   href={watchUrl}
-                  className="group flex items-center gap-2.5 rounded-lg bg-accent px-7 py-3.5 text-xs sm:text-sm font-black tracking-wider uppercase text-black transition-all hover:bg-accent-hover hover:scale-102 active:scale-98 active:bg-[#E67600] cta-primary-glow shadow-xl"
+                  className="group flex items-center gap-2.5 rounded-full bg-accent px-8 py-3.5 text-xs sm:text-sm font-black tracking-wider uppercase text-black transition-all hover:bg-accent-hover hover:scale-102 active:scale-98 active:bg-amber-600 cta-primary-glow shadow-xl"
                 >
                   <Play className="h-4 w-4 fill-black text-black group-hover:translate-x-0.5 transition-transform" />
                   <span>{isFilm ? "STREAM FILM" : "STREAM SERIES"}</span>
@@ -220,10 +220,10 @@ export default function HeroBanner({ items, movie }: HeroBannerProps) {
                 <button
                   type="button"
                   onClick={() => toggleMyList(currentItem)}
-                  className={`flex items-center gap-2 rounded-lg border px-5 py-3.5 text-xs sm:text-sm font-mono tracking-wider uppercase transition-all backdrop-blur-md active:scale-98 ${
+                  className={`flex items-center gap-2 rounded-full border px-6 py-3.5 text-xs sm:text-sm font-mono tracking-wider uppercase transition-all backdrop-blur-md active:scale-98 ${
                     inList
                       ? "border-accent bg-accent/15 text-accent"
-                      : "border-on-primary bg-black/40 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
+                      : "border-on-primary/60 bg-black/40 text-foreground hover:border-accent hover:text-accent hover:bg-accent/10"
                   }`}
                   aria-label={inList ? "In My List" : "Add to My List"}
                 >
